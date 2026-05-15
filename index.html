@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Nadi Tracker</title>
+    <meta name="description" content="Track your Nadi cycles and Uber Eats earnings">
+    <meta name="theme-color" content="#1a1a2e">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Splash / Loading -->
+    <div id="splash" class="splash">
+        <div class="splash-content">
+            <div class="splash-icon">&#x1F319;</div>
+            <h1>Nadi Tracker</h1>
+            <p>Align your energy with the moon</p>
+        </div>
+    </div>
+
+    <!-- App Container -->
+    <div id="app" class="app hidden">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="header-title">Nadi Tracker</h1>
+            <button id="settingsBtn" class="icon-btn" aria-label="Settings">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            </button>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="bottom-nav">
+            <button class="nav-btn active" data-page="home">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+                <span>Home</span>
+            </button>
+            <button class="nav-btn" data-page="checkin">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6v6l4 2"/></svg>
+                <span>Check-in</span>
+            </button>
+            <button class="nav-btn" data-page="calendar">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                <span>Calendar</span>
+            </button>
+            <button class="nav-btn" data-page="stats">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                <span>Stats</span>
+            </button>
+        </nav>
+
+        <!-- Pages -->
+        <main class="main-content">
+            <!-- Home Page -->
+            <section id="page-home" class="page active">
+                <div class="today-card">
+                    <div class="today-phase">
+                        <span class="phase-label" id="todayPaksha">--</span>
+                        <span class="phase-day" id="todayTithi">Day --</span>
+                    </div>
+                    <div class="today-nadi">
+                        <div class="nadi-circle" id="nadiCircle">
+                            <span class="nadi-name" id="expectedNadi">--</span>
+                        </div>
+                        <p class="nadi-description" id="nadiDesc">Loading...</p>
+                    </div>
+                    <div class="today-info">
+                        <div class="info-item">
+                            <span class="info-label">Expected Nadi</span>
+                            <span class="info-value" id="expectedNadiText">--</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Nostril</span>
+                            <span class="info-value" id="expectedNostril">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="streak-card">
+                    <div class="streak-icon">&#x1F525;</div>
+                    <div class="streak-info">
+                        <span class="streak-count" id="streakCount">0</span>
+                        <span class="streak-label">Day Streak</span>
+                    </div>
+                    <p class="streak-desc">Consecutive days nadi was in sync</p>
+                </div>
+
+                <div class="quick-stats">
+                    <div class="stat-card">
+                        <span class="stat-value" id="totalEarnings">$0</span>
+                        <span class="stat-label">This Month</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value" id="matchRate">0%</span>
+                        <span class="stat-label">Match Rate</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value" id="avgEarnings">$0</span>
+                        <span class="stat-label">Avg/Day</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Check-in Page -->
+            <section id="page-checkin" class="page">
+                <div class="checkin-container">
+                    <h2 class="checkin-title">Morning Check-in</h2>
+                    <p class="checkin-subtitle">Which nostril was dominant at sunrise?</p>
+
+                    <div class="checkin-date">
+                        <label for="checkinDate">Date:</label>
+                        <input type="date" id="checkinDate">
+                    </div>
+
+                    <div class="paksha-input">
+                        <label>Paksha & Tithi:</label>
+                        <div class="paksha-select">
+                            <select id="pakshaSelect">
+                                <option value="shukla">Shukla Paksha</option>
+                                <option value="krishna">Krishna Paksha</option>
+                            </select>
+                            <select id="tithiSelect">
+                                <option value="1">Tithi 1</option>
+                                <option value="2">Tithi 2</option>
+                                <option value="3">Tithi 3</option>
+                                <option value="4">Tithi 4</option>
+                                <option value="5">Tithi 5</option>
+                                <option value="6">Tithi 6</option>
+                                <option value="7">Tithi 7</option>
+                                <option value="8">Tithi 8</option>
+                                <option value="9">Tithi 9</option>
+                                <option value="10">Tithi 10</option>
+                                <option value="11">Tithi 11</option>
+                                <option value="12">Tithi 12</option>
+                                <option value="13">Tithi 13</option>
+                                <option value="14">Tithi 14</option>
+                                <option value="15">Tithi 15</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="nadi-buttons">
+                        <button class="nadi-btn ida-btn" id="idaBtn" data-nadi="ida">
+                            <div class="nadi-btn-icon">&#x1F319;</div>
+                            <span class="nadi-btn-label">Left Nostril</span>
+                            <span class="nadi-btn-name">Ida Nadi</span>
+                            <span class="nadi-btn-desc">Cooling, Lunar, Calm</span>
+                        </button>
+                        <button class="nadi-btn pingala-btn" id="pingalaBtn" data-nadi="pingala">
+                            <div class="nadi-btn-icon">&#x2600;&#xFE0F;</div>
+                            <span class="nadi-btn-label">Right Nostril</span>
+                            <span class="nadi-btn-name">Pingala Nadi</span>
+                            <span class="nadi-btn-desc">Heating, Solar, Active</span>
+                        </button>
+                    </div>
+
+                    <div class="earnings-input" id="earningsSection">
+                        <label for="earningsAmount">Uber Eats Earnings ($)</label>
+                        <div class="earnings-field">
+                            <span class="currency">$</span>
+                            <input type="number" id="earningsAmount" placeholder="0.00" step="0.01" min="0">
+                        </div>
+                    </div>
+
+                    <div class="notes-input">
+                        <label for="notesField">Notes (optional)</label>
+                        <textarea id="notesField" placeholder="Weather, area worked, hours, mood..."></textarea>
+                    </div>
+
+                    <button class="save-btn" id="saveCheckin">Save Check-in</button>
+
+                    <div class="checkin-result hidden" id="checkinResult">
+                        <div class="result-icon" id="resultIcon"></div>
+                        <p class="result-text" id="resultText"></p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Calendar Page -->
+            <section id="page-calendar" class="page">
+                <div class="calendar-container">
+                    <div class="calendar-header">
+                        <button class="cal-nav" id="prevMonth">&lt;</button>
+                        <h2 id="calMonthYear">--</h2>
+                        <button class="cal-nav" id="nextMonth">&gt;</button>
+                    </div>
+                    <div class="calendar-legend">
+                        <span class="legend-item"><span class="legend-dot matched"></span> Matched</span>
+                        <span class="legend-item"><span class="legend-dot mismatched"></span> Mismatched</span>
+                        <span class="legend-item"><span class="legend-dot no-data"></span> No Data</span>
+                    </div>
+                    <div class="calendar-grid">
+                        <div class="cal-day-header">Sun</div>
+                        <div class="cal-day-header">Mon</div>
+                        <div class="cal-day-header">Tue</div>
+                        <div class="cal-day-header">Wed</div>
+                        <div class="cal-day-header">Thu</div>
+                        <div class="cal-day-header">Fri</div>
+                        <div class="cal-day-header">Sat</div>
+                    </div>
+                    <div class="calendar-days" id="calendarDays"></div>
+
+                    <!-- Day Detail Modal -->
+                    <div class="day-detail hidden" id="dayDetail">
+                        <div class="day-detail-content">
+                            <button class="close-detail" id="closeDetail">&times;</button>
+                            <h3 id="detailDate">--</h3>
+                            <div class="detail-info">
+                                <p><strong>Paksha:</strong> <span id="detailPaksha">--</span></p>
+                                <p><strong>Tithi:</strong> <span id="detailTithi">--</span></p>
+                                <p><strong>Expected Nadi:</strong> <span id="detailExpected">--</span></p>
+                                <p><strong>Actual Nadi:</strong> <span id="detailActual">--</span></p>
+                                <p><strong>Match:</strong> <span id="detailMatch">--</span></p>
+                                <p><strong>Earnings:</strong> <span id="detailEarnings">--</span></p>
+                                <p><strong>Notes:</strong> <span id="detailNotes">--</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Stats Page -->
+            <section id="page-stats" class="page">
+                <div class="stats-container">
+                    <h2 class="stats-title">Insights & Trends</h2>
+
+                    <div class="stats-summary">
+                        <div class="summary-card highlight">
+                            <span class="summary-label">Avg Earnings (Matched Days)</span>
+                            <span class="summary-value" id="avgMatched">$0</span>
+                        </div>
+                        <div class="summary-card">
+                            <span class="summary-label">Avg Earnings (Mismatched Days)</span>
+                            <span class="summary-value" id="avgMismatched">$0</span>
+                        </div>
+                        <div class="summary-card">
+                            <span class="summary-label">Total Days Tracked</span>
+                            <span class="summary-value" id="totalDays">0</span>
+                        </div>
+                        <div class="summary-card">
+                            <span class="summary-label">Best Earning Day</span>
+                            <span class="summary-value" id="bestDay">$0</span>
+                        </div>
+                    </div>
+
+                    <div class="chart-section">
+                        <h3>Earnings Over Time</h3>
+                        <div class="chart-container" id="earningsChart"></div>
+                    </div>
+
+                    <div class="chart-section">
+                        <h3>Match vs Mismatch Comparison</h3>
+                        <div class="comparison-bars">
+                            <div class="comp-bar">
+                                <span class="comp-label">Matched</span>
+                                <div class="comp-bar-fill matched" id="matchBar"></div>
+                                <span class="comp-value" id="matchValue">$0</span>
+                            </div>
+                            <div class="comp-bar">
+                                <span class="comp-label">Mismatched</span>
+                                <div class="comp-bar-fill mismatched" id="mismatchBar"></div>
+                                <span class="comp-value" id="mismatchValue">$0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-section">
+                        <h3>Nadi Distribution</h3>
+                        <div class="distribution">
+                            <div class="dist-item">
+                                <div class="dist-circle ida" id="idaDist">0%</div>
+                                <span>Ida Active</span>
+                            </div>
+                            <div class="dist-item">
+                                <div class="dist-circle pingala" id="pingalaDist">0%</div>
+                                <span>Pingala Active</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Settings Modal -->
+        <div class="modal hidden" id="settingsModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Settings</h2>
+                    <button class="close-modal" id="closeSettings">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="setting-item">
+                        <label>Export Data</label>
+                        <button class="setting-btn" id="exportData">Export JSON</button>
+                    </div>
+                    <div class="setting-item">
+                        <label>Import Data</label>
+                        <input type="file" id="importData" accept=".json">
+                    </div>
+                    <div class="setting-item danger">
+                        <label>Clear All Data</label>
+                        <button class="setting-btn danger-btn" id="clearData">Clear Data</button>
+                    </div>
+                    <div class="about-section">
+                        <p class="about-text">Nadi Tracker v1.0</p>
+                        <p class="about-text">Track your nadi cycles & earnings patterns</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast -->
+        <div class="toast hidden" id="toast">
+            <span id="toastText"></span>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

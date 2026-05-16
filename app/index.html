@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f1115">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Nadi Tracker">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="styles.css">
+<title>Nadi Tracker</title>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">Nadi Tracker</div>
+  <div class="date-nav">
+    <button id="prevDay" class="icon-btn" aria-label="Previous day">&#8249;</button>
+    <button id="todayDate" class="date-btn"></button>
+    <button id="nextDay" class="icon-btn" aria-label="Next day">&#8250;</button>
+  </div>
+</header>
+
+<main>
+  <!-- TODAY TAB -->
+  <section id="tab-today" class="tab active">
+    <div class="card tithi-card">
+      <div class="tithi-line">
+        <span id="pakshaBadge" class="badge"></span>
+        <span id="tithiName" class="tithi-name"></span>
+      </div>
+      <div class="muted" id="sunriseLine"></div>
+    </div>
+
+    <div class="card nadi-card">
+      <div class="nadi-row">
+        <div class="nadi-col">
+          <div class="label">Expected at sunrise</div>
+          <div id="expectedNadi" class="nadi-value"></div>
+        </div>
+        <div class="nadi-col">
+          <div class="label">Actual at sunrise</div>
+          <div class="nadi-buttons">
+            <button class="nadi-btn" data-nadi="ida">Ida</button>
+            <button class="nadi-btn" data-nadi="pingla">Pingla</button>
+          </div>
+        </div>
+      </div>
+      <div id="matchBanner" class="match-banner hidden"></div>
+    </div>
+
+    <div class="card form-card">
+      <div class="form-row">
+        <label for="earnings">Uber Eats earnings (CAD)</label>
+        <input type="number" id="earnings" inputmode="decimal" step="0.01" min="0" placeholder="0.00">
+      </div>
+      <div class="form-row">
+        <label for="hours">Hours worked</label>
+        <input type="number" id="hours" inputmode="decimal" step="0.25" min="0" placeholder="0">
+      </div>
+      <div class="form-row">
+        <label for="notes">Notes (optional)</label>
+        <textarea id="notes" rows="2" placeholder="Weather, mood, anomalies..."></textarea>
+      </div>
+      <div class="form-actions">
+        <button id="saveBtn" class="primary">Save</button>
+        <button id="deleteBtn" class="danger">Delete entry</button>
+      </div>
+      <div id="saveStatus" class="muted"></div>
+    </div>
+
+    <div class="card derived-card">
+      <div class="derived-row">
+        <div class="derived-cell">
+          <div class="label">$/hour</div>
+          <div id="dollarsPerHour" class="derived-value">—</div>
+        </div>
+        <div class="derived-cell">
+          <div class="label">Today's match</div>
+          <div id="matchPill" class="derived-value">—</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CALENDAR TAB -->
+  <section id="tab-calendar" class="tab">
+    <div class="card">
+      <div class="cal-header">
+        <button id="calPrev" class="icon-btn">&#8249;</button>
+        <div id="calTitle" class="cal-title"></div>
+        <button id="calNext" class="icon-btn">&#8250;</button>
+      </div>
+      <div class="cal-dow">
+        <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
+      </div>
+      <div id="calGrid" class="cal-grid"></div>
+      <div class="legend">
+        <span class="legend-item"><span class="dot match"></span>Match</span>
+        <span class="legend-item"><span class="dot mismatch"></span>Mismatch</span>
+        <span class="legend-item"><span class="dot empty"></span>No log</span>
+        <span class="legend-item">Bigger = more $</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS TAB -->
+  <section id="tab-stats" class="tab">
+    <div class="card kpi-grid">
+      <div class="kpi"><div class="kpi-label">Current streak</div><div class="kpi-value" id="kpiStreak">—</div></div>
+      <div class="kpi"><div class="kpi-label">Longest streak</div><div class="kpi-value" id="kpiLongest">—</div></div>
+      <div class="kpi"><div class="kpi-label">Match %</div><div class="kpi-value" id="kpiMatchPct">—</div></div>
+      <div class="kpi"><div class="kpi-label">Days logged</div><div class="kpi-value" id="kpiDays">—</div></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Earnings: matched vs mismatched</div>
+      <div id="splitMatch" class="split"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Earnings by expected nadi</div>
+      <div id="splitExpected" class="split"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Earnings by paksha</div>
+      <div id="splitPaksha" class="split"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Monthly summary</div>
+      <div class="month-pick">
+        <button id="statMonthPrev" class="icon-btn">&#8249;</button>
+        <div id="statMonthLabel" class="cal-title"></div>
+        <button id="statMonthNext" class="icon-btn">&#8250;</button>
+      </div>
+      <div id="monthSummary" class="month-summary"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Earnings over time</div>
+      <canvas id="trendChart" height="180"></canvas>
+    </div>
+  </section>
+
+  <!-- HISTORY TAB -->
+  <section id="tab-history" class="tab">
+    <div class="card">
+      <div class="history-toolbar">
+        <button id="exportBtn" class="primary">Export CSV</button>
+        <label class="import-label">
+          Import CSV
+          <input type="file" id="importFile" accept=".csv,text/csv" hidden>
+        </label>
+      </div>
+      <div id="historyList" class="history-list"></div>
+    </div>
+  </section>
+</main>
+
+<nav class="tabs">
+  <button class="tab-btn active" data-tab="today">Today</button>
+  <button class="tab-btn" data-tab="calendar">Calendar</button>
+  <button class="tab-btn" data-tab="stats">Stats</button>
+  <button class="tab-btn" data-tab="history">History</button>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+<script src="astro.js" defer></script>
+<script src="app.js" defer></script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('service-worker.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
